@@ -1,5 +1,5 @@
 # Android-Training
-每天学习Adroid开发的项目实践
+学习Android开发的项目实践
 
 第一天：CrashHandler项目
 技术点：实现UncaughtExceptionHandler接口中的uncaughtException方法，收集系统crash信息，保存到本地
