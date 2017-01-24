@@ -1,14 +1,12 @@
 package com.sunteng.roundprogress;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import java.util.Timer;
@@ -18,7 +16,7 @@ import java.util.TimerTask;
  * 倒计时圆圈进度条
  * Created by baishixian on 2015/12/8.
  */
-public class RoundProgressBar extends View {
+public class RoundProgressBar2 extends View {
     /**
      * 画笔
      */
@@ -61,44 +59,37 @@ public class RoundProgressBar extends View {
     private int style;
     public static final int STROKE = 0;
     public static final int FILL = 1;
-    public static final int FRAME  = 100;
-    private static int FrameTime = FRAME;
 
     /**
      * 倒数定时器
      */
     private TimerTask timerTask;
     private Timer timer;
+    private boolean mStartedState = false;
 
-    public RoundProgressBar(Context context) {
+    public RoundProgressBar2(Context context) {
         this(context, null);
     }
 
-    public RoundProgressBar(Context context, AttributeSet attrs) {
+    public RoundProgressBar2(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public RoundProgressBar(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RoundProgressBar2(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         paint = new Paint();
 
-        //获取自定义属性数组
-        TypedArray mTypedArray = context.obtainStyledAttributes(attrs , R.styleable.RoundProgressBar);
-
         //设置自定义属性和默认值
-        roundColor = mTypedArray.getColor(R.styleable.RoundProgressBar_roundColor, Color.GRAY);
-        roundProgressColor = mTypedArray.getColor(R.styleable.RoundProgressBar_roundProgressColor, Color.WHITE);
-        textColor = mTypedArray.getColor(R.styleable.RoundProgressBar_roundProgressTextColor, Color.GRAY);
-        textSize = mTypedArray.getDimension(R.styleable.RoundProgressBar_roundProgressTextSize, 20);
-        roundWidth = mTypedArray.getDimension(R.styleable.RoundProgressBar_roundWidth, 8);
-        max = mTypedArray.getInteger(R.styleable.RoundProgressBar_max, 30);
-        textIsDisplayable = mTypedArray.getBoolean(R.styleable.RoundProgressBar_textIsDisplayable, true);
-        style = mTypedArray.getInt(R.styleable.RoundProgressBar_style, 0);
+        roundColor = Color.GRAY;
+        roundProgressColor = Color.WHITE;
+        textColor = Color.WHITE;
+        textSize = 20 ;
+        roundWidth = 8;
+        max = 15;
+        textIsDisplayable = true;
+        style = 0;
 
-        Log.e("RoundProgressBar","roundColor=" + roundColor + " roundProgressColor=" + roundProgressColor + " textColor=" + textColor + " textSize=" + textSize + " roundWidth="+roundWidth + " max="+max);
-        //回收释放
-        mTypedArray.recycle();
 
     }
 
@@ -117,15 +108,20 @@ public class RoundProgressBar extends View {
 
 
         //画进度百分比
+        paint.setStyle(Paint.Style.FILL);
         paint.setStrokeWidth(0);
         paint.setColor(textColor);
         paint.setTextSize(textSize);
         paint.setTypeface(Typeface.DEFAULT_BOLD); //设置字体
-        int percent = progress ;  //中间的进度
-        float textWidth = paint.measureText(percent / FRAME  + "");   //测量字体宽度，我们需要根据字体的宽度设置在圆环中间
+
+        int percent = max - progress ;  //中间的进度
+
+        int timeText = percent / 1000;
+
+        float textWidth = paint.measureText(timeText + "");   //测量字体宽度，我们需要根据字体的宽度设置在圆环中间
 
         if(textIsDisplayable && percent != 0 && style == STROKE){
-            canvas.drawText(percent / FRAME  + "", centre - textWidth / 2, centre + textSize/2, paint); //画出进度
+            canvas.drawText(timeText  + "", centre - textWidth / 2, centre + textSize/2, paint); //画出进度
         }
 
         //画圆弧 ，画圆环的进度
@@ -137,14 +133,14 @@ public class RoundProgressBar extends View {
             case STROKE:{
                 paint.setStyle(Paint.Style.STROKE);
                 if(max > 0 ){
-                    canvas.drawArc(oval, 0, 360 * progress / max, false, paint);  //根据进度画圆弧
+                    canvas.drawArc(oval, -90, 360 * progress / max, false, paint);  //根据进度画圆弧
                 }
                 break;
             }
             case FILL:{
                 paint.setStyle(Paint.Style.FILL_AND_STROKE);
                 if(progress !=0 && max > 0)
-                    canvas.drawArc(oval, 0, 360 * progress / max, true, paint);  //根据进度画圆弧
+                    canvas.drawArc(oval, -90, 360 * progress / max, true, paint);  //根据进度画圆弧
                 break;
             }
         }
@@ -152,43 +148,23 @@ public class RoundProgressBar extends View {
 
     /**
      * 设置进度的最大值
-     * @param m
+     * @param progress
      */
-    public synchronized void setMax(int m) {
-        if(max < 0){
-            throw new IllegalArgumentException("max not less than 0");
-        }
-        this.max = m * FRAME;
-        FrameTime = max;
-    }
-
-    /**
-     * 获取进度的最大值
-     */
-    public synchronized int getMax() {
-        return max;
+    public synchronized void setMaxProgress(int progress) {
+        this.max = progress;
     }
 
     /**
      * 设置进度，此为线程安全控件，由于考虑多线的问题，需要同步
      * 刷新界面调用postInvalidate()能在非UI线程刷新
-     * @param p
+     * @param progress
      */
-    public synchronized void setProgress(int p) {
-
-        if(progress < 0){
-            throw new IllegalArgumentException("progress not less than 0");
-        }
-
-        progress = p * FRAME;
-
+    public synchronized void setProgress(int progress) {
         if(progress > max){
             progress = max;
         }
-        if(progress <= max){
-            this.progress = p ;
-            postInvalidate();
-        }
+        this.progress = progress ;
+        postInvalidate();
 
     }
 
@@ -201,13 +177,11 @@ public class RoundProgressBar extends View {
     }
 
 
-
-
     /**
      * 刷新界面调用postInvalidate()能在非UI线程刷新
-     * @param p
+     * @param progress
      */
-    private synchronized void refreshProgress(int p) {
+    private synchronized void refreshProgress(int progress) {
 
         if(progress < 0){
             throw new IllegalArgumentException("progress not less than 0");
@@ -217,7 +191,7 @@ public class RoundProgressBar extends View {
             progress = max;
         }
         if(progress <= max){
-            this.progress = p ;
+            this.progress = progress ;
             postInvalidate();
         }
 
@@ -243,31 +217,71 @@ public class RoundProgressBar extends View {
         this.roundWidth = roundWidth;
     }
 
+
     /**
-     * 开始到时计时
+     * 开始倒计时进度条，间隔
+     *
+     * @param progress 设置计时器进度条当前进度时间 单位s 秒
+     * @param maxProgress 设置计时器进度条最大时间 单位s 秒
      */
-    public void show() {
+    public void show(int progress, int maxProgress) {
 
-        if (timer == null) {
-            timer = new Timer();
+        if (progress < 0) {
+            maxProgress = 0;
         }
 
-        if (timerTask == null) {
-            timerTask = new MyTimerTask();
+        if (progress > maxProgress){
+            progress = maxProgress;
         }
 
-        if(timer != null && timerTask != null ){
-             timer.schedule(timerTask, 0L, 1000L / FRAME);
+        cancel();
+
+        /**
+         * 剩余播放进度
+         */
+        setProgress(progress);
+        setMaxProgress(maxProgress);
+
+        if(maxProgress > 0){
+            if (timer == null) {
+                timer = new Timer();
+            }
+
+            if (timerTask == null) {
+                timerTask = new MyTimerTask();
+            }
+
+            mStartedState = true;
+
+            // 每隔10ms刷新进度条
+            timer.schedule(timerTask, 800L, 1000);
+        }
+        if(this.getVisibility() == View.INVISIBLE ){
+            this.setVisibility(VISIBLE);
         }
 
     }
 
+    /**
+     * 暂停倒数计时
+     */
+    public void cancel() {
+        cancelRestTimerTask();
+    }
+
+    public boolean isStarted() {
+        return mStartedState;
+    }
+
+
     private class MyTimerTask extends TimerTask {
         @Override
         public void run() {
-            RoundProgressBar.this.refreshProgress(FrameTime--);
-            if (FrameTime == -1) {
-                //倒计时为0的时候做自己需要处理的业务逻辑
+
+            progress = progress + 1000;
+            refreshProgress(progress);
+            if (progress >= max) {
+                //倒计时为最大的时候做自己需要处理的业务逻辑
                 cancelRestTimerTask();
             }
         }
@@ -275,17 +289,9 @@ public class RoundProgressBar extends View {
 
 
     /**
-     * 暂停倒数计时
-     */
-    public void stop() {
-        cancelRestTimerTask();
-    }
-
-
-    /**
      * 取消RestTimerTask
      */
-    private void cancelRestTimerTask() {
+    public void cancelRestTimerTask() {
         if (timer != null) {
             timer.cancel();
             timer = null;
@@ -295,5 +301,6 @@ public class RoundProgressBar extends View {
             timerTask.cancel();
             timerTask = null;
         }
+        mStartedState = false;
     }
 }

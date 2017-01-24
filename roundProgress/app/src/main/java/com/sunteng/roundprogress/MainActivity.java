@@ -21,7 +21,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        roundProgressBar = (RoundProgressBar) findViewById(R.id.rpd);
+        roundProgressBar = (RoundProgressBar)
+                findViewById(R.id.rpd);
         time = 10;
         roundProgressBar.setMax(time);
         roundProgressBar.setProgress(time);
