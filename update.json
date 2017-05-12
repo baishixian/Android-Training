@@ -1,9 +1,11 @@
 {
-  "versionCode": 1,
+  "version": 5,
   "versionName": "2017051201",
-  "channel": "SF01",
   "title": "回馈用户",
   "detail": "游戏又有新玩法，下载安装更新，即可获赠游戏回馈大礼包",
-  "url": "https://raw.githubusercontent.com/shunfei/suntengMob-sdk-android/master/Sample/MobSample.apk",
-  "appId": "com.sunteng.game.shengshibaye"
+  "appId": "com.sunteng.game.shengshibaye",
+  "channelUpdate": {
+    "SF01": "https://raw.githubusercontent.com/shunfei/suntengMob-sdk-android/master/Sample/MobSample.apk",
+    "SF02": "https://raw.githubusercontent.com/shunfei/suntengMob-sdk-android/master/Sample/MobSample.apk"
+  }
 }
