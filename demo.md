@@ -20,10 +20,12 @@
 	* [清除广告缓存文件](#清除广告缓存文件)
 
 <div id="一、导入sdk" />
+
 ### 一、导入sdk 
     将sdk解压后的libs目录下的jar文件导入到工程指定的libs目录
 
 <div id="二、配置AndroidManifest.xml文件" />
+
 ### 二、配置AndroidManifest.xml文件  
 
 ```xml
@@ -50,9 +52,11 @@
 ```
 
 <div id="三、SDK初始化" />
+
 ### 三、SDK初始化 
 
 ####**调用初始化：**
+
 在主 Activity 的 `onCreate()` 中调用下面静态方法：
         
 `AdService.init(Activity activity, String appSecret);`
@@ -62,8 +66,10 @@
 
 
 <div id="四、插屏广告展示" />
+
 ### 四、插屏广告展示
-```java
+
+```
 /**
  * 请求插屏广告示例代码
  * adUnitID 从官网获取(测试广告位 2-38-43)
@@ -122,6 +128,7 @@ private void showInterstitialAd(){ // 调用展示方法前先调用方法判断
  `InterstitialListener` 中的` onAdShowFailed(int code)`，code是错误码，具体原因请查阅下文的失败错误码。
 
 <div id="五、开屏广告展示" />
+
 ### 五、开屏广告展示
 
 开屏广告用于 App 启动页，开发者需为开屏广告提供一个父布局容器，可自由控制开屏广告的展示区域和尺寸。
@@ -188,7 +195,9 @@ private void loadSplash(){
 ```
 > **注意:** 开屏广告展示完成之后会自动缓存下一次广告内容，SDK 也提供 `loadAd()` 作为主动请求广告的方法
 
+
 <div id="六、展示横幅广告(Banner)" /> 
+
 ### 六、展示横幅广告(Banner)
 
 为方便开发者自定义横幅广告尺寸，提供了不同的 BannerAdView 的构造器。
@@ -256,6 +265,7 @@ public BannerAdView(Context context, String adUnitID)
 > 处于展示中的 Banner 具有自动刷新内容的功能，刷新的启用和时间间隔可在 SSP 管理后台中操作。
  
 <div id="七、原生广告——图文信息流(NativeAd)" /> 
+
 ### 七、原生广告——图文信息流(NativeAd)
 
 **1、加载单个原生广告**
@@ -382,7 +392,9 @@ nativeAd.registerView((NativeAdView)adViewHolder.itemView);
 
  具体使用可参考 Samlpe 中的基于 RecyclerView 实现的代码示例。
  
+
 <div id="八、原生广告——视频信息流(VideoNativeAd)" /> 
+
 ### 八、原生广告——视频信息流(VideoNativeAd)
 
 ####**设置广告视频内容是否自适应（默认开启，全局有效）**
@@ -430,6 +442,7 @@ VideoNativeAd videoNativeAd.enableAutoPlayVideo();
 VideoNativeAd videoNativeAd.disableAutoPlayVideo();
 
 ```
+
 > **自动播放控制逻辑：**
 > 
 > **1.视图可见性定义：**视图处于 VISIBLE 状态且未被其他 view 覆盖，未处于锁屏、系统控制栏下拉、弹窗状态下。
@@ -440,6 +453,7 @@ VideoNativeAd videoNativeAd.disableAutoPlayVideo();
 
 
 #### **展示单个视频信息流广告**
+
 原生广告（信息流视频广告）是内嵌于 App 原生内容中的广告形式，我们提供了 VideoNativeAdView 布局让开发者可以快速自定义展示内容。视频播放组件内置于 MadieView 中，播放控制依赖于 SDK 内部完成。
     
 
@@ -565,13 +579,17 @@ videoNativeAd.checkAdIsExpire();
  
 
 <div id="九、原生视频广告" /> 
+
 ### 九、原生视频广告
+
 **设置视频广告在播放中是否可关闭**
+
   ``` VideoAdService.setCloseVideoEnable(boolean closeEnable); ```
 
 > 用于控制视频播放界面左上脚关闭按钮是否展示的开关，用户可以在播放中点击关闭按钮关闭广告。
 
 **创建视频广告组件**
+
 ```java
 /**
  * 创建一个全屏模式视频广告组件
@@ -581,6 +599,7 @@ videoNativeAd.checkAdIsExpire();
  */
  VideoAdService.createFullModelVideoAd(Activity activity, String adUnitID);
 ```
+
 ```java
 /**
  * 创建一个窗口模式视频广告组件
@@ -643,7 +662,9 @@ VideoAdListener videoAdListener  = new VideoAdListener() {
 ```
 
 **视频广告请求和资源下载** 
- `mWindowVideoAd.loadAd();`
+
+`mWindowVideoAd.loadAd();`
+
 `mFullScreenVideoAd.loadAd();`
 
 > 广告预加载包括预先请求广告和广告资源下载
@@ -664,7 +685,6 @@ if (mFullScreenVideoAd != null || mFullScreenVideoAd.isReady()){
      return;
 }
 
-
 @Override
 protected void onPause() {
     super.onPause();
@@ -684,6 +704,7 @@ protected void onResume() {
 ```  
 
 <div id="十、视频贴片广告" /> 
+
 ### 十、视频贴片广告  
 
 **隐藏视频贴片右上角倒计时:**  
@@ -788,13 +809,17 @@ protected void onDestroy() {
 >b) 开发者需要在`Activity`的`onResume()`、`onPause()`、`onDestroy()`3个方法中分别调用`InStreamAd`的`onResume()`、`onPause()`、`onDestroy()`。
 
 <div id="十一、广告展示失败时的一些错误码" /> 
+
 ### 十一、广告展示失败时的一些错误码
-  `SDKCode.CODE_UNKNOWN_ERROR = -1;//异步请求过程中发生错误
-   SDKCode.CODE_HTTP_ERROR = 1; //处理http请求的过程中发生错误
-   SDKCode.CODE_PRELOAD_FIALED = 2; //广告资源加载失败
-   SDKCode.CODE_BAD_NETWORK = 0;//无网络或无网络权限
-   SDKCode.CODE_BLANK_RESPONSE = 201 // 竞价请求失败,返回留白
-   SDKCode.CODE_BACK_AMOUNT = 202; //竞价请求失败,返回返量`
+ 
+  ```
+  SDKCode.CODE_UNKNOWN_ERROR = -1;//异步请求过程中发生错误
+  SDKCode.CODE_HTTP_ERROR = 1; //处理http请求的过程中发生错误
+  SDKCode.CODE_PRELOAD_FIALED = 2; //广告资源加载失败
+  SDKCode.CODE_BAD_NETWORK = 0;//无网络或无网络权限
+  SDKCode.CODE_BLANK_RESPONSE = 201 // 竞价请求失败,返回留白    
+  SDKCode.CODE_BACK_AMOUNT = 202; //竞价请求失败,返回返量
+  ```
     
     
     
@@ -816,6 +841,7 @@ protected void onDestroy() {
 
 
 <div id="十二、适配Android7.0" />
+
 ### 十二、适配Android7.0（如果不需要支持可直接跳过本段）
 > 如果App需要支持Android7.0以上的设备，sdk提供了Android7.0多窗口模式和文件共享等相关特性的支持。  
 
@@ -855,6 +881,7 @@ Manifest中注册SplashActivity时候，需要加上*android:resizeableActivity=
 ```
 
 <div id="十三、其他" />	
+
 ### 十三、其他
 
 <div id="设置Debug模式" />	
