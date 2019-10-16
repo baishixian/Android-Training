@@ -1,5 +1,6 @@
 package com.bsx.jetpacksample.ui;
 
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bsx.jetpacksample.R;
+import com.bsx.jetpacksample.model.database.entity.User;
 import com.bsx.jetpacksample.viewmodel.UserProfileViewModel;
 
 /**
@@ -42,6 +44,17 @@ public class UserFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         String userLogin = getArguments().getString(UID_KEY);
         mViewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
+
+        // Use the ViewModel
+        mViewModel.getUser(userLogin).observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                if (user != null){
+                    String userName = user.firstName;
+                    // update ui...
+                }
+            }
+        });
     }
 
 }
